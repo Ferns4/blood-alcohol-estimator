@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>Blood Alcohol Limit Estimator</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f6f7fb;
+            color: #333;
+        }
+
+        header {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .calculator-section {
+            padding: 30px;
+        }
+
+        .section-header {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            color: #222;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            flex: 1 1 100%;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .input-group select,
+        .input-group input {
+            flex: 1 1 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            background: #fafafa;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus, 
+        .input-group select:focus {
+            border: 1px solid #9ad4d6;
+            outline: none;
+        }
+
+        .button-group {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        button {
+            background: #39a2ae;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2f858d;
+        }
+
+        .result-section {
+            padding: 30px;
+            background: #f9f9fd;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .result-header {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .result-content {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .facts-section {
+            padding: 30px;
+            background: #fefefe;
+        }
+
+        .facts-header {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .facts-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .facts-list li {
+            background: #fff;
+            border: 1px solid #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9rem;
+            padding: 15px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Blood Alcohol Limit Estimator
+    </header>
+    <main>
+        <div class="calculator-section">
+            <h2 class="section-header">Input Your Details</h2>
+            <div class="input-group">
+                <label for="weight">Weight (lbs):</label>
+                <input type="number" id="weight" placeholder="e.g. 180" min="50" max="500"/>
+            </div>
+            <div class="input-group">
+                <label for="gender">Gender:</label>
+                <select id="gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="state">State:</label>
+                <select id="state">
+                    <option value="CA">California - Legal Limit: 0.08%</option>
+                    <option value="NY">New York - Legal Limit: 0.08%</option>
+                    <option value="TX">Texas - Legal Limit: 0.08%</option>
+                    <option value="FL">Florida - Legal Limit: 0.08%</option>
+                    <option value="UT">Utah - Legal Limit: 0.05%</option>
+                    <option value="AL">Alabama - Legal Limit: 0.08%</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="currentBAC">Current Estimated BAC (Optional):</label>
+                <input type="number" step="0.001" id="currentBAC" placeholder="e.g. 0.02" min="0" max="0.5"/>
+            </div>
+            <div class="input-group">
+                <label for="absorptionRate">Absorption Rate Factor:</label>
+                <select id="absorptionRate">
+                    <option value="0.015">Average (0.015% per hour)</option>
+                    <option value="0.02">Fast Absorber (0.02% per hour)</option>
+                    <option value="0.01">Slow Absorber (0.01% per hour)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="timeElapsed">Time Until Test (hours):</label>
+                <input type="number" step="0.1" id="timeElapsed" placeholder="e.g. 1.5" min="0" max="10"/>
+            </div>
+            <div class="button-group">
+                <button id="calculateBtn">Calculate Required Shots</button>
+            </div>
+        </div>
+        <div class="result-section" id="resultSection" style="display:none;">
+            <h2 class="result-header">Results</h2>
+            <div class="result-content" id="resultContent">
+                <!-- Filled by JavaScript -->
+            </div>
+        </div>
+        <div class="facts-section">
+            <h2 class="facts-header">Did You Know?</h2>
+            <ul class="facts-list">
+                <li>Alcohol impairs judgment, coordination, and reaction time, increasing the risk of accidents.</li>
+                <li>Excessive drinking can lead to liver damage, heart problems, and other long-term health issues.</li>
+                <li>Alcohol poisoning is a serious and potentially life-threatening condition that can result from high levels of alcohol in the bloodstream.</li>
+                <li>Even moderate drinking can affect your decision-making and increase risky behavior.</li>
+                <li>The safest option is always to avoid driving after consuming any alcohol.</li>
+            </ul>
+        </div>
+    </main>
+    <footer>
+        &copy; 2024 SafeDrive Initiative
+    </footer>
+
+    <script>
+        /*
+         NOTE: All values and calculations here are approximations and should not be used in any 
+         real-world decision-making scenario. This is a fictional calculator purely for demonstration.
+
+         Formula used (simplified and not medically accurate): 
+         BAC roughly = (AlcoholConsumedInGrams / (BodyWeightInGrams * GenderConstant)) * 100
+
+         For simplicity, let's say:
+         - 1 standard shot (1.5 oz of 40% ABV liquor) ~ 14g of alcohol.
+         - Gender constants (Widmark factor approximations): male = 0.68, female = 0.55
+         - We'll assume legal limit:
+             CA, NY, TX, FL, AL: 0.08%
+             UT: 0.05%
+         - We'll try to factor in absorption and current BAC.
+        */
+
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            const weight = parseFloat(document.getElementById('weight').value) || 180;
+            const gender = document.getElementById('gender').value;
+            const state = document.getElementById('state').value;
+            const currentBAC = parseFloat(document.getElementById('currentBAC').value) || 0.00;
+            const absorptionRate = parseFloat(document.getElementById('absorptionRate').value) || 0.015;
+            const timeElapsed = parseFloat(document.getElementById('timeElapsed').value) || 1.0;
+
+            // Determine legal limit based on state
+            let legalLimit = 0.08;
+            if(state === 'UT') {
+                legalLimit = 0.05;
+            }
+
+            // Gender constant
+            let r = (gender === 'male') ? 0.68 : 0.55;
+
+            // Weight in grams approx (1 lb ~ 453.592g)
+            const weightInGrams = weight * 453.592;
+
+            // Assume 1 shot = 14g pure alcohol
+            // We'll estimate how many shots would raise the BAC from currentBAC to the legal limit.
+            // BAC formula (simple approximation): BAC = (A / (W * r)) * 100
+            // We want: legalLimit = ((A) / (W * r)) * 100
+            // Account for currentBAC and metabolism over timeElapsed:
+            
+            const adjustedCurrentBAC = Math.max(currentBAC - (absorptionRate * timeElapsed), 0);
+
+            // currentA = (adjustedCurrentBAC * W * r) / 100
+            const currentA = (adjustedCurrentBAC * weightInGrams * r) / 100;
+
+            // target total alcohol for legal limit
+            const targetA = (legalLimit * weightInGrams * r) / 100;
+
+            // Additional alcohol needed in grams
+            const additionalA = Math.max(targetA - currentA, 0);
+
+            // Shots needed:
+            const shotsNeeded = (additionalA / 14);
+
+            let resultText = "";
+            if(shotsNeeded > 0) {
+                const roundedShots = Math.ceil(shotsNeeded * 10) / 10;
+                resultText = `To exceed the legal limit of ${legalLimit.toFixed(2)}% in your state, you would need approximately ${roundedShots} standard shot(s) of alcohol under these conditions. Please remember that this is a rough estimate and individual reactions vary greatly.`;
+            } else {
+                resultText = `Based on the information provided, you might already be at or above the legal limit, or it may not require additional alcohol to put you over. Remember, this is just an approximation—do not rely on it for any real-life decision-making.`;
+            }
+
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+            resultContent.textContent = resultText;
+            resultSection.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
